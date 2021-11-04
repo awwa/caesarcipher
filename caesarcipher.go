@@ -50,13 +50,14 @@ func Encrypt(in string, sh int) (enc string, err error) {
 	return
 }
 
-// Dectyptはシーザー復号化を行います
+// Decryptはシーザー復号化を行います
 // 概要:
 //   入力値の各文字列を変換テーブル上で左方向にシフトして結果を返す
 // 入力:
 //   in: 暗号化文字列(a-z .\r\nのみ入力可、80文字以内、元の文字に手がかり文字列this,the,thatいずれかを含む)
 // 出力:
 //   dec: 平文
+//   sh:  入力に適用されていたシフト量
 //   err: 正常時: nil, エラー: 不正な入力
 // 戦略:
 //   暗号化されていても各文字間のインデクスの差は変わらない
@@ -185,8 +186,11 @@ func subStr(in string) []int { // ほんのり速い
 }
 
 func main() {
-	out, sh, err := Decrypt("xlmw mw xli tmgxyvi xlex m xsso mr xli xvmt.")
+	in := "xlmw mw xli tmgxyvi xlex m xsso mr xli xvmt."
+	// in := "適当な文字列"
+	fmt.Printf("in : '%s'\n", in)
+	out, sh, err := Decrypt(in)
 	fmt.Printf("out: '%s'\n", out)
-	fmt.Printf("sh: %d\n", sh)
+	fmt.Printf("sh : %d\n", sh)
 	fmt.Printf("err: %v\n", err)
 }
