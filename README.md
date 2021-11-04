@@ -54,9 +54,8 @@ ok      caesarcipher    9.057s
 
 ```
 $ go run .
+in : 'xlmw mw xli tmgxyvi xlex m xsso mr xli xvmt.'
 out: 'this is the picture that i took in the trip.'
-sh: 4
+sh : 4
 err: <nil>
 ```
-aa
-a
