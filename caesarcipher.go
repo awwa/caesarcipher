@@ -63,6 +63,7 @@ func Encrypt(in string, sh int) (enc string, err error) {
 // 例:
 //   "this": []int{12, 25, 16}
 //   "uijt": []int{12, 25, 16}
+//   入力文字列内から「[]int{12, 25, 16}」に該当する箇所をループ検索して、見つかったら先頭文字't'と'u'の差分「8」をシフト量とする
 func Decrypt(in string) (dec string, sh int, err error) {
 	// 入力チェック
 	err = assert(in)
