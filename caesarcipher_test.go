@@ -89,7 +89,7 @@ func TestDecrypt(t *testing.T) {
 	for i := range decrypttests {
 		test := &decrypttests[i]
 		actual, sh, err := Decrypt(test.in)
-		if test.dec != actual || !reflect.DeepEqual(test.err, err) {
+		if test.dec != actual || test.err != err {
 			t.Errorf("Test failed: Decrypt('%s') = '%s', %d, '%v' want '%s', %d, '%v'",
 				test.in, actual, sh, err, test.dec, test.sh, test.err)
 		}
@@ -120,7 +120,7 @@ func TestAssert(t *testing.T) {
 	for i := range asserttests {
 		test := &asserttests[i]
 		actual := assert(test.in)
-		if !reflect.DeepEqual(test.err, actual) {
+		if test.err != actual {
 			t.Errorf("Test failed: Assert('%s') = %v want %v",
 				test.in, actual, test.err)
 		}
