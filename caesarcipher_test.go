@@ -239,14 +239,14 @@ func TestSubStr(t *testing.T) {
 }
 
 // 配列内で指定文字のインデクスを調べる処理テストケース構造体
-type indexTest struct {
-	in    []rune
-	v     rune
-	index int
+type indexOfTest struct {
+	target     []rune
+	searchChar rune
+	index      int
 }
 
 // 配列内で指定文字のインデクスを調べる処理テストケース
-var indextests = []indexTest{
+var indextests = []indexOfTest{
 	{[]rune("abcde"), 'a', 0},
 	{[]rune("abcde"), 'c', 2},
 	{[]rune("abcde"), 'e', 4},
@@ -257,10 +257,10 @@ var indextests = []indexTest{
 func TestIndex(t *testing.T) {
 	for i := range indextests {
 		test := &indextests[i]
-		actual := index(test.in, test.v)
+		actual := indexOf(test.target, test.searchChar)
 		if actual != test.index {
 			t.Errorf("Test failed: index('%v', '%v') = %d want %d",
-				test.in, test.v, actual, test.index)
+				test.target, test.searchChar, actual, test.index)
 		}
 	}
 }
@@ -291,7 +291,7 @@ func BenchmarkShift(b *testing.B) {
 
 func BenchmarkIndex(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		index([]rune("abcdefghijklmnopqrstuvwxyz"), 't')
+		indexOf([]rune("abcdefghijklmnopqrstuvwxyz"), 't')
 	}
 }
 

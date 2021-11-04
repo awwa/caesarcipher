@@ -134,7 +134,7 @@ func shift(in string, sh int) (out string) {
 			continue
 		}
 		// 変換テーブル内のインデクス値
-		i := index(TBL, v)
+		i := indexOf(TBL, v)
 		// シフト後に変換テーブルの範囲を超えたらループして調整
 		len := len(TBL)
 		var ii int = (i + sh) % len
@@ -156,8 +156,8 @@ func shift(in string, sh int) (out string) {
 // 出力:
 //   out: インデクス差分(被減数<減数の場合、変換テーブル長を加えてループする)
 func subtract(left rune, right rune) (out int) {
-	l := index(TBL, left)
-	r := index(TBL, right)
+	l := indexOf(TBL, left)
+	r := indexOf(TBL, right)
 	out = l - r
 	if out < 0 {
 		out += len(TBL)
@@ -185,13 +185,13 @@ func subStr(in string) []int { // ほんのり速い
 
 // indexは指定した文字が最初に見つかった配列内のインデクスを返す
 // 入力:
-//   in: rune配列
-//   v: 検索対象文字
+//   target: rune配列
+//   searchChar: 検索対象文字
 // 出力:
 //   見つかった場合: 配列内インデクス、見つからなかった場合: -1
-func index(in []rune, v rune) int {
-	for i, a := range in {
-		if a == v {
+func indexOf(target []rune, searchChar rune) int {
+	for i, v := range target {
+		if v == searchChar {
 			return i
 		}
 	}
