@@ -15,11 +15,11 @@ type encryptTest struct {
 
 // 暗号化処理のテストケース
 var encrypttests = []encryptTest{
-	{"z", -1, "", ErrInvalidSh},
-	{"ABC", 4, "", ErrString},   // 非対象文字テスト
-	{"あいうえお", 5, "", ErrString}, // 非ASCII文字テスト
+	{"z", -1, "", ErrShift},
+	{"ABC", 4, "", ErrChar},   // 非対象文字テスト
+	{"あいうえお", 5, "", ErrChar}, // 非ASCII文字テスト
 	{"abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghija", 31, "", ErrLength}, // 81文字の境界テスト
-	{"123456789012345678901234567890123456789012345678901234567890123456789012345678901", 31, "", ErrString}, // 不正な文字種＋文字数制限オーバー
+	{"123456789012345678901234567890123456789012345678901234567890123456789012345678901", 31, "", ErrChar},   // 不正な文字種＋文字数制限オーバー
 	{"a", 0, "a", nil},
 	{"a", 1, "b", nil},
 	{"a", 25, "z", nil},
@@ -74,7 +74,7 @@ var decrypttests = []decryptTest{
 	{"bpqa qa i xmv", "this is a pen", 8, nil},
 	{"cqrb rb j ynw.\r\n", "this is a pen.\r\n", 8, nil},
 	{"", "", 0, ErrNoClue},                           // 非対称文字テスト
-	{"あいうえお", "", 0, ErrString},                      // 非ASCII文字テスト
+	{"あいうえお", "", 0, ErrChar},                        // 非ASCII文字テスト
 	{"qa bpqa i xmv", "is this a pen", 8, nil},       // 先頭にthisを含むテスト
 	{"xmv qa bpqa", "pen is this", 8, nil},           // 末尾にthisを含むテスト
 	{"bpm xmv qa gwcza", "the pen is yours", 8, nil}, // 先頭にtheを含むテスト
@@ -109,10 +109,10 @@ var asserttests = []assertTest{
 	{"a", nil},
 	{"jldks kfjke klekl lskdj.\nhoge furga", nil},
 	{"abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij", nil}, // 80文字の境界テスト
-	{"A", ErrString},
-	{"A\tH&3kdkwlkd", ErrString},
+	{"A", ErrChar},
+	{"A\tH&3kdkwlkd", ErrChar},
 	{"abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghija", ErrLength}, // 81文字の境界テスト
-	{"123456789012345678901234567890123456789012345678901234567890123456789012345678901", ErrString}, // 不正な文字種＋文字数制限オーバー
+	{"123456789012345678901234567890123456789012345678901234567890123456789012345678901", ErrChar},   // 不正な文字種＋文字数制限オーバー
 }
 
 // 入力チェック処理テスト
@@ -189,16 +189,16 @@ type subtractTest struct {
 
 // インデクス差分計算処理のテストケース
 var substracttests = []subtractTest{
-	{[]rune("t")[0], []rune("h")[0], 12}, // t=19 h=7
-	{[]rune("h")[0], []rune("i")[0], 25}, // h=7  i=8
-	{[]rune("i")[0], []rune("s")[0], 16}, // i=8  s=18
-	{[]rune("b")[0], []rune("p")[0], 12}, // b=2  p=15
-	{[]rune("p")[0], []rune("q")[0], 25}, // p=15 q=16
-	{[]rune("q")[0], []rune("a")[0], 16}, // q=16 a=0
-	{[]rune("t")[0], []rune("h")[0], 12}, // t=19 h=7
-	{[]rune("t")[0], []rune("e")[0], 15}, // t=19 e=4
-	{[]rune("b")[0], []rune("p")[0], 12}, // b=1 p=15
-	{[]rune("b")[0], []rune("m")[0], 15}, // b=1 m=12
+	{'t', 'h', 12}, // t=19 h=7
+	{'h', 'i', 25}, // h=7  i=8
+	{'i', 's', 16}, // i=8  s=18
+	{'b', 'p', 12}, // b=2  p=15
+	{'p', 'q', 25}, // p=15 q=16
+	{'q', 'a', 16}, // q=16 a=0
+	{'t', 'h', 12}, // t=19 h=7
+	{'t', 'e', 15}, // t=19 e=4
+	{'b', 'p', 12}, // b=1 p=15
+	{'b', 'm', 15}, // b=1 m=12
 }
 
 // インデクス差分計算処理のテスト
@@ -238,6 +238,33 @@ func TestSubStr(t *testing.T) {
 	}
 }
 
+// 配列内で指定文字のインデクスを調べる処理テストケース構造体
+type indexTest struct {
+	in    []rune
+	v     rune
+	index int
+}
+
+// 配列内で指定文字のインデクスを調べる処理テストケース
+var indextests = []indexTest{
+	{[]rune("abcde"), 'a', 0},
+	{[]rune("abcde"), 'c', 2},
+	{[]rune("abcde"), 'e', 4},
+	{[]rune("abcde"), 'f', -1},
+}
+
+// 1文字単位のインデクス差分計算処理テスト
+func TestIndex(t *testing.T) {
+	for i := range indextests {
+		test := &indextests[i]
+		actual := index(test.in, test.v)
+		if actual != test.index {
+			t.Errorf("Test failed: index('%v', '%v') = %d want %d",
+				test.in, test.v, actual, test.index)
+		}
+	}
+}
+
 func BenchmarkAssert(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		assert("xlmw mw xli tmgxyvi xlex m xsso mr xli xvmt.")
@@ -246,7 +273,7 @@ func BenchmarkAssert(b *testing.B) {
 
 func BenchmarkSubtract(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		subtract([]rune("x")[0], []rune("j")[0])
+		subtract('x', 'j')
 	}
 }
 
@@ -259,6 +286,12 @@ func BenchmarkSubStr(b *testing.B) {
 func BenchmarkShift(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		shift("xlmw mw xli tmgxyvi xlex m xsso mr xli xvmt.", -8)
+	}
+}
+
+func BenchmarkIndex(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		index([]rune("abcdefghijklmnopqrstuvwxyz"), 't')
 	}
 }
 

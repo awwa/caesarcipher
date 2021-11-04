@@ -3,6 +3,8 @@
 
 ## 実装方針
 
+- マジックナンバーの利用を避ける
+  - 計算処理がわかりづらくなる
 - 計算とログ出力は分離する
   - Unit testするため
   - プログラムの再利用性を高めるため
@@ -36,18 +38,19 @@ ok      caesarcipher    0.493s
 shift()とSubStr()を改善して処理速度を上げてみた(TODO箇所参照)
 
 ```
-$ go test -bench .
+$ go test --bench .
 goos: darwin
 goarch: amd64
 pkg: caesarcipher
 cpu: Intel(R) Core(TM) i5-6360U CPU @ 2.00GHz
-BenchmarkAssert-4         324014              3620 ns/op
-BenchmarkSubtract-4     36181652                28.73 ns/op
-BenchmarkSubStr-4          74241             16292 ns/op
-BenchmarkShift-4          127974              8562 ns/op
-BenchmarkDecrypt-4         22124             54508 ns/op
+BenchmarkAssert-4         364064              3289 ns/op
+BenchmarkSubtract-4     44459637                23.23 ns/op
+BenchmarkSubStr-4          73123             14851 ns/op
+BenchmarkShift-4          312428              4130 ns/op
+BenchmarkIndex-4        75046777                16.08 ns/op
+BenchmarkDecrypt-4         27697             38651 ns/op
 PASS
-ok      caesarcipher    9.057s
+ok      caesarcipher    10.599s
 ```
 
 ## 実行
