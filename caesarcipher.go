@@ -59,30 +59,26 @@ func Encrypt(in string, sh int) (enc string, err error) {
 //   sh:  入力に適用されていた右方向へのシフト量
 //   err: 正常時: nil, エラー: 不正な入力
 // 戦略:
-//   暗号化されていても各文字間のインデクスの差は変わらない
+//   暗号化されていても各文字間のインデクスの差は変わらないので、入力文字列からこの条件にマッチする箇所を探し出し、シフト量を算出する
 // 例:
 //   "this": []int{12, 25, 16}
 //   "uijt": []int{12, 25, 16}
-// 手順:
-//   1. 入力文字列にて、ある位置の文字とその隣の文字のインデクス値の差を計算し配列を生成する(subin)
-//   2. 手がかりワードにて、ある位置の文字とその隣の文字のインデクス値の差を計算し配列を生成する(subclue)
-//   3. subin内にsubclueに一致する順序の値をサーチする
-//   4. 見つかったらその位置の文字と手がかりワードの先頭文字のインデクス値の差がシフト量
-//   5. シフト量分左にシフトすれば復号化できる
 func Decrypt(in string) (dec string, sh int, err error) {
 	// 入力チェック
 	err = assert(in)
 	if err != nil {
 		return
 	}
-	// 入力文字列中に手がかりワードが見つかったことを示すフラグ
-	var hit bool = false
+	var hit bool = false // 入力文字列中に手がかりワードが見つかったことを示すフラグ
+	// 1. 入力文字列にて、ある位置の文字とその隣の文字のインデクス値の差を算出し配列を生成する(subin)
 	subin := subStr(in)
 	// 手がかりワードごとにループ
 	for i := 0; i < len(CLUES); i++ {
+		// 2. 手がかりワードにて、ある位置の文字とその隣の文字のインデクス値の差を計算し配列を生成する(subclue)
 		subclue := subStr(CLUES[i])
-		// 入力文字列のインデクス値の差配列を先頭からサーチ
+		// 3. subin内にsubclueに一致する順序の値をサーチする
 		for j := 0; j < len(subin)-len(subclue)+1; j++ {
+			// 4. 見つかったらその位置の文字と手がかりワードの先頭文字のインデクス値の差がシフト量(sh)
 			if reflect.DeepEqual(subin[j:j+1], subclue[0:len(subclue)-1]) {
 				sh = subtract([]rune(in)[j], []rune(CLUES[i])[0])
 				hit = true
@@ -95,7 +91,7 @@ func Decrypt(in string) (dec string, sh int, err error) {
 		err = ErrNoClue
 		return
 	}
-	// 左方向文字シフト
+	// 5. シフト量分左にシフトすれば復号化できる
 	dec = shift(in, -sh)
 	return
 }
